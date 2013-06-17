@@ -29,6 +29,10 @@ if (!exists('g:enable_numbers'))
 	let g:enable_numbers = 1
 endif
 
+if (!exists('g:number_blacklist'))
+	let g:number_blacklist = []
+endif
+
 if v:version < 703 || &cp
     echomsg "numbers.vim: you need at least Vim 7.3 and 'nocp' set"
     echomsg "Failed loading numbers.vim"
@@ -59,7 +63,9 @@ function! NumbersToggle()
 endfunc
 
 function! ResetNumbers()
-    if(g:center == 0)
+    if join(g:number_blacklist,'\|') =~# &filetype
+        setlocal nonumber norelativenumber
+    elseif(g:center == 0)
         setlocal number
     elseif(g:mode == 0)
         setlocal relativenumber
@@ -90,6 +96,7 @@ function! NumbersEnable()
         autocmd InsertEnter * :call SetNumbers()
         autocmd InsertLeave * :call SetRelative()
         autocmd BufNewFile  * :call ResetNumbers()
+        autocmd BufEnter    * :call ResetNumbers()
         autocmd BufReadPost * :call ResetNumbers()
         autocmd BufReadPost * :call SetWidth()
         autocmd FocusLost   * :call Uncenter()
