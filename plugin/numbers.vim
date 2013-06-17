@@ -3,7 +3,7 @@
 " Maintainer:     Mahdi Yusuf yusuf.mahdi@gmail.com
 " Version:        0.1.0
 " Description:    vim global plugin for better line numbers.
-" Last Change:    26 June, 2012
+" Last Change: 2013 Jun 17
 " License:        MIT License
 " Location:       plugin/numbers.vim
 " Website:        https://github.com/myusuf3/numbers.vim
@@ -51,20 +51,20 @@ endfunc
 function! NumbersToggle()
     if (g:mode == 1)
         let g:mode = 0
-        set relativenumber
+        setlocal relativenumber
     else
         let g:mode = 1
-        set number
+        setlocal number
     endif
 endfunc
 
 function! ResetNumbers()
     if(g:center == 0)
-        set number
+        setlocal number
     elseif(g:mode == 0)
-        set relativenumber
+        setlocal relativenumber
     else
-        set number
+        setlocal number
     end
 endfunc
 
@@ -78,6 +78,11 @@ function! Uncenter()
     call ResetNumbers()
 endfunc
 
+function! SetWidth()
+    let &numberwidth=len(line("$"))+1
+endfunction
+
+
 function! NumbersEnable()
     let g:enable_numbers = 1
     augroup NumbersAug
@@ -86,8 +91,11 @@ function! NumbersEnable()
         autocmd InsertLeave * :call SetRelative()
         autocmd BufNewFile  * :call ResetNumbers()
         autocmd BufReadPost * :call ResetNumbers()
+        autocmd BufReadPost * :call SetWidth()
         autocmd FocusLost   * :call Uncenter()
         autocmd FocusGained * :call Center()
+        autocmd WinEnter    * :call SetRelative()
+        autocmd WinLeave    * :call SetNumbers()
     augroup END
 endfunc
 
